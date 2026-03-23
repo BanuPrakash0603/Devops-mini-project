@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Feedback System</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Student Feedback System</h1>
+        <form action="/submit" method="post">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+            <label for="feedback">Feedback:</label>
+            <textarea id="feedback" name="feedback" required></textarea>
+            <button type="submit">Submit</button>
+        </form>
+        <h2>All Feedback</h2>
+        <ul>
+            {% for name, feedback in feedbacks %}
+                <li><strong>{{ name }}</strong>: {{ feedback }}</li>
+            {% else %}
+                <li>No feedback yet.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>

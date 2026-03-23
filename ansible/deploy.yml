@@ -1,0 +1,20 @@
+---
+- name: Deploy Student Feedback System
+  hosts: localhost
+  tasks:
+    - name: Build Docker image
+      community.docker.docker_image:
+        name: student-feedback-system
+        build:
+          path: ".."
+      become: false
+
+    - name: Run Docker container
+      community.docker.docker_container:
+        name: student-feedback-system
+        image: student-feedback-system
+        state: started
+        ports:
+          - "5000:5000"
+        restart_policy: always
+      become: false
