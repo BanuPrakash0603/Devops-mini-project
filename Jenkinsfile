@@ -1,27 +1,56 @@
 pipeline {
     agent any
 
+    tools {
+        git 'DefaultGit'   // Make sure you added this in Global Tool Config
+    }
+
+    environment {
+        IMAGE_NAME = "student-feedback-app"
+        CONTAINER_NAME = "student-feedback-container"
+    }
+
     stages {
 
-        stage('Clone Code') {
+        stage('Checkout Code') {
             steps {
-                git branch: 'main', url: 'https://github.com/umanagesh789/student-feedback-system.git'
+                git branch: 'main',
+                    url: 'https://github.com/umanagesh789/student-feedback-system.git'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                bat 'docker build -t student-feedback-app .'
+                sh '''
+                docker build -t $IMAGE_NAME .
+                '''
+            }
+        }
+
+        stage('Stop Old Container') {
+            steps {
+                sh '''
+                docker stop $CONTAINER_NAME || true
+                docker rm $CONTAINER_NAME || true
+                '''
             }
         }
 
         stage('Run Container') {
             steps {
-                bat 'docker stop student-app || exit 0'
-                bat 'docker rm student-app || exit 0'
-                bat 'docker run -d -p 5000:5000 --name student-app student-feedback-app'
+                sh '''
+                docker run -d -p 8080:8080 --name $CONTAINER_NAME $IMAGE_NAME
+                '''
             }
         }
+    }
 
+    post {
+        success {
+            echo "✅ Deployment Successful!"
+        }
+        failure {
+            echo "❌ Build Failed!"
+        }
     }
 }
